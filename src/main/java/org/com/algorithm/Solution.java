@@ -155,4 +155,46 @@ public class Solution {
         }
         return left;
     }
+
+    /**
+     * 26. 删除有序数组中的重复项
+     *
+     * @param nums
+     *
+     * @return
+     */
+    public int removeDuplicatesV0(int[] nums) {
+        int n = nums.length;
+        int slow = 1;
+        for (int fast = 1; fast < n; fast++) {
+            if (nums[fast] != nums[fast - 1]) {
+                nums[slow] = nums[fast];
+                slow++;
+            }
+        }
+        return slow;
+    }
+
+    /**
+     * 80. 删除有序数组中的重复项 II
+     *
+     * @param nums
+     *
+     * @return
+     */
+    public int removeDuplicates(int[] nums) {
+        int n = nums.length;
+        if (n <= 2) {
+            return n;
+        }
+        int slow = 2, fast = 2;
+        while (fast < n) {
+            if (nums[slow - 2] != nums[fast]) {
+                nums[slow] = nums[fast];
+                ++slow;
+            }
+            ++fast;
+        }
+        return slow;
+    }
 }
