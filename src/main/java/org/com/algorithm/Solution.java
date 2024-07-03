@@ -1,7 +1,12 @@
 package org.com.algorithm;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Solution {
+    int[] nums;
+
     public Solution() {
     }
 
@@ -196,5 +201,57 @@ public class Solution {
             ++fast;
         }
         return slow;
+    }
+
+    /**
+     * 80. 删除有序数组中的重复项 II
+     */
+    public int majorityElement(int[] nums) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int count = nums.length / 2;
+        int ans = 0;
+        for (int num : nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
+            if (map.get(num) > count) {
+                count = map.get(num);
+                ans = num;
+            }
+        }
+        return ans;
+    }
+
+    /**
+     * 80. 删除有序数组中的重复项 II
+     * 快排
+     */
+    public int majorityElementQK(int[] nums) {
+        this.nums = nums; // 将输入数组赋给类成员变量 nums
+        int n = nums.length;
+        return qs(0, n - 1, (n + 1) / 2); // 调用快速选择算法找出第 (n+1)/2 大的元素
+    }
+
+    private int qs(int l, int r, int k) {
+        if (l >= r) {
+            return nums[l];
+        }
+        int x = nums[(l + r) / 2]; // 选择中间元素作为基准元素 x
+        int i = l - 1, j = r + 1;
+        while (i < j) {
+            do
+                i++;
+            while (nums[i] < x); // 找到第一个大于等于 x 的元素索引 i
+            do
+                j--;
+            while (nums[j] > x); // 找到第一个小于等于 x 的元素索引 j
+            if (i < j) {
+                int t = nums[i]; // 交换 nums[i] 和 nums[j]
+                nums[i] = nums[j];
+                nums[j] = t;
+            }
+        }
+        int cnt = j - l + 1; // 计算在当前划分后，基准元素 x 的左侧有多少个元素
+        if (cnt >= k)
+            return qs(l, j, k); // 如果左侧元素个数大于等于 k，则继续在左侧递归查找
+        return qs(j + 1, r, k - cnt); // 否则在右侧继续查找第 k-cnt 大的元素
     }
 }
