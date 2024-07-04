@@ -254,4 +254,90 @@ public class Solution {
             return qs(l, j, k); // 如果左侧元素个数大于等于 k，则继续在左侧递归查找
         return qs(j + 1, r, k - cnt); // 否则在右侧继续查找第 k-cnt 大的元素
     }
+
+    /**
+     * 189. 轮转数组
+     *
+     * @param nums
+     * @param k
+     */
+    public void rotate(int[] nums, int k) {
+        int[] temp = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            temp[(i + k) % nums.length] = nums[i];
+        }
+        System.arraycopy(temp, 0, nums, 0, temp.length);
+    }
+
+
+    /**
+     * 3086. 拾起 K 个 1 需要的最少行动次数
+     *
+     * @param nums
+     * @param k
+     * @param maxChanges
+     *
+     * @return
+     */
+    public long minimumMoves(int[] nums, int k, int maxChanges) {
+        int n = nums.length;
+
+        int left = 0, right = -1;
+        long leftSum = 0, rightSum = 0;
+        long leftCount = 0, rightCount = 0;
+        long res = Long.MAX_VALUE;
+        for (int i = 0; i < n; i++) {
+            if (f(i, nums) + maxChanges >= k) {
+                if (k <= f(i, nums)) {
+                    res = Math.min(res, (long) k - nums[i]);
+                } else {
+                    res = Math.min(res, (long) 2 * k - f(i, nums) - nums[i]);
+                }
+            }
+            if (k <= maxChanges) {
+                continue;
+            }
+            while (right + 1 < n && (right - i < i - left || leftCount + rightCount + maxChanges < k)) {
+                if (nums[right + 1] == 1) {
+                    rightCount++;
+                    rightSum += right + 1;
+                }
+                right++;
+            }
+            while (leftCount + rightCount + maxChanges > k) {
+                if (right - i < i - left || right - i == i - left && nums[left] == 1) {
+                    if (nums[left] == 1) {
+                        leftCount--;
+                        leftSum -= left;
+                    }
+                    left++;
+                } else {
+                    if (nums[right] == 1) {
+                        rightCount--;
+                        rightSum -= right;
+                    }
+                    right--;
+                }
+            }
+            res = Math.min(res, leftCount * i - leftSum + rightSum - rightCount * i + 2L * maxChanges);
+            if (nums[i] == 1) {
+                leftCount++;
+                leftSum += i;
+                rightCount--;
+                rightSum -= i;
+            }
+        }
+        return res;
+    }
+
+    public int f(int i, int[] nums) {
+        int x = nums[i];
+        if (i - 1 >= 0) {
+            x += nums[i - 1];
+        }
+        if (i + 1 < nums.length) {
+            x += nums[i + 1];
+        }
+        return x;
+    }
 }
